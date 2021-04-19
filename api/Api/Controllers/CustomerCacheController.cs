@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Data;
 using Data.Model;
 
@@ -11,13 +10,13 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class CustomerCacheController : ControllerBase
     {
         public ICustomerData CustomerData { get; }
 
-        public CustomerController(CustomerDataResolver resolver)
+        public CustomerCacheController(CustomerDataResolver resolver)
         {
-            CustomerData = resolver(CustomerDataType.SqlCustomerData); 
+            CustomerData = resolver(CustomerDataType.RedisCustomerData);
         }
 
         // GET: api/Customer

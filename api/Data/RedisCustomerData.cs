@@ -8,11 +8,11 @@ using Data.Model;
 
 namespace Data
 {
-    public class SqlCustomerData : ICustomerData
+    public class RedisCustomerData : ICustomerData
     {
         public AzureRedisDbContext DbContext { get; }
 
-        public SqlCustomerData(AzureRedisDbContext dbContext)
+        public RedisCustomerData(AzureRedisDbContext dbContext)
         {
             DbContext = dbContext;
         }

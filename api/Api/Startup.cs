@@ -15,6 +15,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api
 {
+    public enum CustomerDataType
+    {
+        SqlCustomerData,
+        RedisCustomerData
+    }
+
+    //delegate for determining which implementation to use for ICustomerData
+    public delegate ICustomerData CustomerDataResolver(CustomerDataType type);
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -25,7 +34,6 @@ namespace Api
         public IConfiguration Configuration { get; }
 
         private readonly string corsPolicy = "defaultPolicy";
-
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -45,7 +53,23 @@ namespace Api
             services.AddDbContextPool<AzureRedisDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AngApiStarterConn"))
             );
-            services.AddScoped<ICustomerData, SqlCustomerData>();
+
+            services.AddTransient<SqlCustomerData>();
+            services.AddTransient<RedisCustomerData>();
+            services.AddTransient<CustomerDataResolver>(serviceProvider => type =>
+            {
+                switch (type)
+                {
+                    case CustomerDataType.SqlCustomerData:
+                        return serviceProvider.GetService<SqlCustomerData>();
+                    case CustomerDataType.RedisCustomerData:
+                        return serviceProvider.GetService<RedisCustomerData>();
+                    default:
+                        return serviceProvider.GetService<SqlCustomerData>();
+                }
+            });
+
+            //services.AddScoped<ICustomerData, SqlCustomerData>();
             services.AddControllers();
         }
 
