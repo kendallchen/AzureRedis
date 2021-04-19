@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Data.Model;
+using StackExchange.Redis;
 
 namespace Data
 {
@@ -38,6 +39,12 @@ namespace Data
 
         public async Task<IEnumerable<Customer>> Get()
         {
+            ConnectionMultiplexer connection = ConnectionMultiplexer.Connect("dotnetleadazureredis.redis.cache.windows.net:6380,password=,ssl=True,abortConnect=False");
+            // select a database (by default, DB = 0)
+            IDatabase db = connection.GetDatabase();
+            // run a command, in this case a GET
+            RedisValue myVal = db.StringGet("mykey");
+
             return await DbContext.Customer.ToListAsync();
         }
 
